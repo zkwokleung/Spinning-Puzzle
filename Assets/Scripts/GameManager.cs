@@ -19,6 +19,7 @@ namespace Zkwokleung.MiniGames.SpinningPuzzles
         [SerializeField] private List<GameObject> Indicators;
         [SerializeField] private Image Preview;
         [SerializeField] private TextMeshProUGUI TimerText;
+        [SerializeField] private TextMeshProUGUI StepText;
         [SerializeField] private GameObject CompleteText;
         [SerializeField] private GameObject BtnChangeDir;
         public QuestionData CurrentQuestion;
@@ -28,7 +29,8 @@ namespace Zkwokleung.MiniGames.SpinningPuzzles
 
         #region Public Properties
         public float TimerValue { get; private set; }
-        public SpinDirectionEnum Direction = SpinDirectionEnum.Clockwise;
+        public SpinDirectionEnum Direction = SpinDirectionEnum.CounterClockwise;
+        public int Step { get; private set; }
         #endregion
 
         #region Private Fields
@@ -60,6 +62,21 @@ namespace Zkwokleung.MiniGames.SpinningPuzzles
         }
         #endregion
 
+        #region Events
+        private void OnSpin()
+        {
+            if (IsCorrect())
+            {
+                GameOver();
+            }
+            else
+            {
+                Step++;
+                StepText.text = "Steps: " + Step.ToString();
+            }
+        }
+        #endregion
+
         #region Logic Functions
         public void StartNewGame()
         {
@@ -75,6 +92,7 @@ namespace Zkwokleung.MiniGames.SpinningPuzzles
             StartTimer();
             CompleteText.SetActive(false);
             m_isGameOver = false;
+            Step = 0;
             SetAllIndicatorOff();
         }
 
@@ -134,10 +152,7 @@ namespace Zkwokleung.MiniGames.SpinningPuzzles
                 SetImage(bottomLeft, tmp);
             }
 
-            if (IsCorrect())
-            {
-                GameOver();
-            }
+            OnSpin();
         }
 
         public void Shuffle()
